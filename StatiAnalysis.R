@@ -13,3 +13,9 @@ library(tidyverse)
 library(ggplot2)
 library(stats)
 library(MASS)  # For fitdistr function
+
+#PRE-PROCESSING
+# Check for missing values
+missing_values <- colSums(is.na(EvData))
+print("Missing Values per Column:")
+missing_values
