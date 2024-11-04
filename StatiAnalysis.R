@@ -55,4 +55,25 @@ p1 <- ggplot(EvData, aes(x = Location)) +
        y = "Count") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
+# 2. Habitat distribution
+p2 <- ggplot(EvData, aes(x = Habitat)) +
+  geom_bar(fill = "lightgreen") +
+  theme_minimal() +
+  labs(title = "Distribution of Habitats",
+       x = "Habitat Type",
+       y = "Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# 3. Cranial Capacity vs Height
+p3 <- ggplot(EvData, aes(x = Cranial_Capacity, y = Height)) +
+  geom_point(alpha = 0.6) +
+  theme_minimal() +
+  labs(title = "Relationship between Cranial Capacity and Height",
+       x = "Cranial Capacity",
+       y = "Height")
+
+# Print all plots
+print(p1)
+print(p2)
+print(p3)
+
 
