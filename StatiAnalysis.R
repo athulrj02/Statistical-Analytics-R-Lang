@@ -4,10 +4,10 @@ EvData <- read.csv("EvolutionDataSets.csv")
 head(EvData)
 
 # libraries
-install.packages("tidyverse")
-install.packages("ggplot2")
-install.packages("stats")
-install.packages("MASS")
+#install.packages("tidyverse")
+#install.packages("ggplot2")
+#install.packages("stats")
+#install.packages("MASS")
 
 library(tidyverse)
 library(ggplot2)
@@ -76,4 +76,59 @@ print(p1)
 print(p2)
 print(p3)
 
+# (b) Central and variational measures for Cranial Capacity
+cranial_stats <- data.frame(
+  Mean = mean(EvData$Cranial_Capacity),
+  Median = median(EvData$Cranial_Capacity),
+  SD = sd(EvData$Cranial_Capacity),
+  IQR = IQR(EvData$Cranial_Capacity),
+  Min = min(EvData$Cranial_Capacity),
+  Max = max(EvData$Cranial_Capacity),
+  Variance = var(EvData$Cranial_Capacity),
+  CV = sd(EvData$Cranial_Capacity) / mean(EvData$Cranial_Capacity) * 100
+)
+print("Cranial Capacity Statistics:")
+print(cranial_stats)
+
+# (c) Chebyshev's rule for Cranial Capacity
+cranial_mean <- mean(EvData$Cranial_Capacity)
+cranial_sd <- sd(EvData$Cranial_Capacity)
+chebyshev_interval <- c(cranial_mean - cranial_sd, cranial_mean + cranial_sd)
+
+# Find outliers using Chebyshev's rule
+chebyshev_outliers <- EvData$Cranial_Capacity[
+  EvData$Cranial_Capacity < chebyshev_interval[1] |
+    EvData$Cranial_Capacity > chebyshev_interval[2]
+]
+
+# (d) Box plot outlier detection
+# Create boxplot with outlier labels
+boxplot_cranial <- ggplot(EvData, aes(y = Cranial_Capacity)) +
+  geom_boxplot(fill = "lightblue") +
+  theme_minimal() +
+  labs(title = "Boxplot of Cranial Capacity with Outliers",
+       y = "Cranial Capacity")
+
+print(boxplot_cranial)
+
+# Calculate boxplot statistics manually
+Q1 <- quantile(EvData$Cranial_Capacity, 0.25)
+Q3 <- quantile(EvData$Cranial_Capacity, 0.75)
+IQR_val <- Q3 - Q1
+lower_bound <- Q1 - 1.5 * IQR_val
+upper_bound <- Q3 + 1.5 * IQR_val
+
+boxplot_outliers <- EvData$Cranial_Capacity[
+  EvData$Cranial_Capacity < lower_bound |
+    EvData$Cranial_Capacity > upper_bound
+]
+
+print("Boxplot Statistics:")
+print(paste("Q1:", Q1))
+print(paste("Q3:", Q3))
+print(paste("IQR:", IQR_val))
+print(paste("Lower bound:", lower_bound))
+print(paste("Upper bound:", upper_bound))
+print("Boxplot outliers:")
+print(boxplot_outliers)
 
