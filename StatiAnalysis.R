@@ -132,3 +132,53 @@ print(paste("Upper bound:", upper_bound))
 print("Boxplot outliers:")
 print(boxplot_outliers)
 
+
+############################
+### Question 2 Solutions ###
+############################
+
+
+# a) Probability models for selected variables
+# 1. Cranial Capacity (Continuous) - Normal distribution
+cranial_fit <- fitdistr(EvData$Cranial_Capacity, "normal")
+
+# 2. Location (Categorical) - Multinomial
+location_prob <- prop.table(table(EvData$Location))
+
+# 3. Height (Continuous) - Normal distribution
+height_fit <- fitdistr(EvData$Height, "normal")
+
+# 4. Habitat (Categorical) - Multinomial
+habitat_prob <- prop.table(table(EvData$Habitat))
+
+# b) Parameter estimates
+print("Normal distribution parameters for Cranial Capacity:")
+print(cranial_fit$estimate)
+
+print("Multinomial probabilities for Location:")
+print(location_prob)
+
+print("Normal distribution parameters for Height:")
+print(height_fit$estimate)
+
+print("Multinomial probabilities for Habitat:")
+print(habitat_prob)
+
+# c) Predictions
+# For normal distributions, we can use mean ± 2*sd for 95% prediction intervals
+cranial_pred_interval <- c(
+  cranial_fit$estimate["mean"] - 2*cranial_fit$estimate["sd"],
+  cranial_fit$estimate["mean"] + 2*cranial_fit$estimate["sd"]
+)
+
+height_pred_interval <- c(
+  height_fit$estimate["mean"] - 2*height_fit$estimate["sd"],
+  height_fit$estimate["mean"] + 2*height_fit$estimate["sd"]
+)
+
+print("95% Prediction interval for Cranial Capacity:")
+print(cranial_pred_interval)
+
+print("95% Prediction interval for Height:")
+print(height_pred_interval)
+
