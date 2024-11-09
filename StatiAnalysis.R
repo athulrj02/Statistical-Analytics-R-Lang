@@ -1,4 +1,4 @@
-setwd("D:\\CA1")
+setwd("D:\\R-Stati")
 list.files()
 EvData <- read.csv("EvolutionDataSets.csv")
 head(EvData)
@@ -71,10 +71,37 @@ p3 <- ggplot(EvData, aes(x = Cranial_Capacity, y = Height)) +
        x = "Cranial Capacity",
        y = "Height")
 
+# Distribution for Cranial Capacity by Species
+p4 <- ggplot(EvData, aes(x='Genus_&_Specie', y=Cranial_Capacity)) + geom_boxplot() + theme_minimal() + labs(title="Cranial Capacity by Species", x="Species", y="Cranial Capacity")
+
+
+# Distribution for species count by country
+p5 <- ggplot(EvData, aes(x = reorder(Current_Country, -table(Current_Country)[Current_Country]))) +
+  geom_bar(fill = "lightcoral") +
+  labs(title = "Number of Species Found per Country", 
+       x = "Country", 
+       y = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+migrated <- EvData %>%
+  group_by(Migrated) %>%
+  summarise(count = n())
+
+p6<- ggplot(migrated, aes(x = "", y = count, fill = Migrated)) +
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar("y") +
+  labs(title = "Proportion of Migrated Species") +
+  theme_void()
+
+
 # Print all plots
 print(p1)
 print(p2)
 print(p3)
+print(p4)
+print(p5)
+print(p6)
 
 # (b) Central and variational measures for Cranial Capacity
 cranial_stats <- data.frame(
@@ -139,46 +166,139 @@ print(boxplot_outliers)
 
 
 # a) Probability models for selected variables
-# 1. Cranial Capacity (Continuous) - Normal distribution
-cranial_fit <- fitdistr(EvData$Cranial_Capacity, "normal")
 
-# 2. Location (Categorical) - Multinomial
-location_prob <- prop.table(table(EvData$Location))
+# (a) Propose probability models for four variables
+# Normal distribution for 'Time' and 'Cranial_Capacity'
+# Multinomial distribution for 'Genus_&_Specie' and 'Diet'
 
-# 3. Height (Continuous) - Normal distribution
-height_fit <- fitdistr(EvData$Height, "normal")
-
-# 4. Habitat (Categorical) - Multinomial
-habitat_prob <- prop.table(table(EvData$Habitat))
 
 # b) Parameter estimates
-print("Normal distribution parameters for Cranial Capacity:")
-print(cranial_fit$estimate)
+# Estimating mean and standard deviation for Time
+mean_time=mean(EvData$Time)
+sd_time = sd(EvData$Time)
+p_density=dnorm(EvData$Time,mean_time,sd_time)
+hist(EvData$Time,freq=FALSE)
+curve(dnorm(x,mean_time,sd_time),add=TRUE,col='red')
 
-print("Multinomial probabilities for Location:")
-print(location_prob)
+# For Cranial Capacity
+#mean_cranial=mean(EvData$Cranial_Capacity)
+#sd_cranial=sd(EvData$Cranial_Capacity)
+lam=1/cranial_mean
+alpha=cranial_mean*lam
+a=min(EvData$Cranial_Capacity)
+a
+b=max(EvData$Cranial_Capacity)
+b
+j=seq(0,1449,0.9)
+pdf=dgamma(j,alpha,lam)
+hist(EvData$Cranial_Capacity,freq=TRUE)
+plot(j,pdf,type="l",col='red')
+#c_density=dnorm(EvData$Cranial_Capacity,mean_time,sd_time)
+#hist(EvData$Cranial_Capacity,freq=FALSE)
+#curve(dnorm(x,mean_cranial,sd_cranial),add=TRUE,col='red')
 
-print("Normal distribution parameters for Height:")
-print(height_fit$estimate)
+mean_time  # Mean for Time
+sd_time  # Standard deviation for Time
+cranial_mean  # Mean for Cranial Capacity
+cranial_sd  # Standard deviation for Cranial Capacity
 
-print("Multinomial probabilities for Habitat:")
-print(habitat_prob)
+# For categorical variables 'Genus_&_Specie' and 'Diet'
+habitat_probs=prop.table(table(EvData$Habitat))
+barplot(habitat_probs,col="lightblue",ylim=c(0,0.3))
+lines(x=0:9,y=rep(1/10,10),type="o",col="darkblue")
 
-# c) Predictions
-# For normal distributions, we can use mean ± 2*sd for 95% prediction intervals
-cranial_pred_interval <- c(
-  cranial_fit$estimate["mean"] - 2*cranial_fit$estimate["sd"],
-  cranial_fit$estimate["mean"] + 2*cranial_fit$estimate["sd"]
-)
+diet_probs=prop.table(table(EvData$Diet))
+diet_probs
+barplot(diet_probs)
+abline(h=diet_probs[2])
 
-height_pred_interval <- c(
-  height_fit$estimate["mean"] - 2*height_fit$estimate["sd"],
-  height_fit$estimate["mean"] + 2*height_fit$estimate["sd"]
-)
 
-print("95% Prediction interval for Cranial Capacity:")
-print(cranial_pred_interval)
+habitat_counts <- table(EvData$Habitat)
+barplot(habitat_counts, main = "Distribution of Habitats", xlab = "Habitat", ylab = "Frequency", col = "lightblue")
 
-print("95% Prediction interval for Height:")
-print(height_pred_interval)
+
+#barplot(EvData$Habitat)
+
+habitat_probs  # Probability distribution for Genus_&_Specie
+diet_probs  # Probability distribution for Diet
+
+# (c) Predict values using the models
+# Prediction using Normal distribution for Cranial Capacity
+r_time=rnorm(EvData$Time,mean_time,sd_time)
+pred_mean=mean(r_time)
+pred_mean
+
+cranial_pdf=dgamma(EvData$Cranial_Capacity,lam,alpha)  # Probability of Cranial Capacity < 500
+pred_cranial=max(cranial_pdf)
+pred_cranial# Print the prediction
+
+tab_habitat=table(EvData$Habitat)
+p=tab_habitat/sum(tab_habitat)
+j=c(10,20,25,15,10,5,5,10)
+pred_pdf_habitat=dmultinom(j,100,p)
+pred_pdf_habitat
+
+t=table(EvData$Diet)
+mode=names(t)[which(t==max(t))]
+pred=mode
+pred
+
+
+############################
+### Question 3 Solutions ###
+############################
+
+# a) Chi-square test: 'Genus_&_Specie' and 'Diet'
+X1 = EvData$Genus_and_Specie
+X2 = EvData$Diet
+#H0: X1 and X2 are independent   H1: X1 and X2 are dependent
+alpha=0.01
+F = table(X1,X2)
+F
+n=nrow(EvData)
+E=matrix(NA,24,5)
+for(i in 1:24){
+  for(j in 1:5){
+    Fi0=sum(F[i,]);F0j=sum(F[,j])
+    E[i,j]=(Fi0*F0j)/n
+  }
+}
+test.value=sum((F-E)^2/E)
+test.value   
+c.value=qchisq(1-alpha,92)
+c.value
+#since test.value>c.value reject H0
+#X1 and X2 are dependent
+
+# (b) Apply goodness-of-fit test for 'Diet'
+# Assume an expected probability distribution for 'Diet' categories
+#step 1  H0: p1=p2=p3=p4=p5=1/5   H1: Not H0
+#step 2:
+alpha=0.05
+k=5
+#step 3:
+F=table(EvData$Diet)
+p=rep(1/5,5)
+n=length(EvData$Diet)
+E=n*p
+test.value=sum((F-E)^2/E)
+#step 4
+c.value=qchisq(1-alpha, (k-1))
+print(test.value)
+print(c.value)
+#since test.value>c.value H0 rejected
+
+# Print the result of the goodness-of-fit test
+
+# (c) Test the mean of a continuous variable
+#H0: mu=600 H1: mu !=600    # two-sided HT
+mu0=600
+alpha=0.05
+xbar=mean(EvData$Cranial_Capacity) 
+sigma=sd(EvData$Cranial_Capacity)
+n=nrow(EvData)
+test.value=(xbar-mu0)/(sigma/sqrt(n))
+c.value=qnorm(1-(alpha/2))
+c(test.value,c.value)
+#since |test.value|>c.value therefore H0 is accepted
 
