@@ -75,5 +75,23 @@ The analysis covers data distribution, central tendencies, variation measures, a
 
 ## Results
 
+This analysis provides insights into the biological characteristics of ancient human species through statistical and visual examination. Key findings include:
 
+1. **Species and Habitat Distribution:** Species are distributed across various locations and habitats, with significant variation by country and region.
+
+2. **Cranial Capacity Insights:** Cranial capacity shows a positive correlation with height, suggesting a relationship between body size and cranial development. However, significant outliers exist, indicating variability in cranial size that could be linked to evolutionary factors.
+
+3. Migration Patterns: A noticeable proportion of species exhibit migration traits, potentially shedding light on historical migration patterns.
+
+4. **Probability Distributions for Attributes:**
+
+* Continuous variables like cranial capacity and time fit well with gamma and normal distributions, respectively, allowing predictive modeling.
+* Categorical variables such as habitat and diet follow multinomial distributions, highlighting their variability across the dataset.
+5. **Hypothesis Tests:**
+
+* Independence: Genus & Species and Diet are statistically dependent, suggesting that dietary preferences are associated with specific species.
+* Goodness-of-Fit: The expected uniform distribution of Diet categories was rejected, indicating dietary specialization among species.
+* Mean Testing: The mean cranial capacity does not match the hypothesized value, suggesting unique evolutionary traits within this population.
+
+Overall, these results provide a statistical basis for understanding physical and behavioral adaptations in ancient human species, reflecting evolutionary diversity. The analysis framework also offers a reproducible approach for similar datasets in evolutionary biology.
 ---
